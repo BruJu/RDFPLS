@@ -1,0 +1,17 @@
+@prefix : <http://example.org/> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+:main rdf:type pls:main_function ;
+    pls:instructions (
+        ( pls:print [ pls:_ << 2 pls:plus 3 >> ] )
+        ( pls:print [ pls:_ 77 ] )
+        ( pls:affect _:x [ pls:_ << 80 pls:plus 8 >> ] )
+        ( pls:print "80 + 8    =" _:x )
+        ( pls:affect _:x [ pls:_ << 33 pls:minus 3 >> ] )
+        ( pls:print "33 - 3    =" _:x )
+        ( pls:affect _:x [ pls:_ << _:x pls:divide 10 >> ] )
+        ( pls:print "x/10      =" _:x )
+        ( pls:print "2^3       =" [ pls:_ << 2 pls:power 3 >> ] )
+        ( pls:print "-4 cute 5 =" [ pls:_ << -4 pls:pickTheCutest 5 >> ] )
+    ) .

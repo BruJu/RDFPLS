@@ -1,12 +1,15 @@
 {
-    
+    
 "dependencies": {
-    
-    
+    
+    
+"@bruju/wasm-tree": "^0.2.0",
+    
+    
 "@rdfjs/namespace": "^1.1.0",
-    
-    
+    
+    
 "n3": "^1.8.0"
-    
+    
 }
 }

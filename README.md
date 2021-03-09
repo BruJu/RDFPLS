@@ -24,6 +24,7 @@ Currently only print is supported
 - It crashes because N3's parser doesn't allow literals in subject position :(
     - See the message `    at N3Parser._readSubject (B:\RDFPLS\node_modules\n3\lib\N3Parser.js:253:40)`
     - Remove that line
+    - Yes, RDFPLS also promotes the worst programming practices.
 - Retype the command line
 - It works !
 

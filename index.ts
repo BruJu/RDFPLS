@@ -11,6 +11,7 @@ const pls = namespace("http://bruy.at/rdf/pls#"                    , { factory: 
 // const xsd = namespace("http://www.w3.org/2001/XMLSchema#"          , { factory: N3.DataFactory });
 
 const $dg = N3.DataFactory.defaultGraph();
+let printOnConsole = console.log;
 
 type Memory = {[name: string]: RDF.Literal};
 
@@ -25,7 +26,11 @@ function getQuad(dataset: RDF.DatasetCore): RDF.Quad {
   return [...dataset][0];
 }
 
-function unlist(dataset: RDF.DatasetCore, head: RDF.Quad_Subject): RDF.Quad_Object[] {
+export function changePrintEffect(f: (...s: string[]) => void) {
+  printOnConsole = f;
+}
+
+export function unlist(dataset: RDF.DatasetCore, head: RDF.Quad_Subject): RDF.Quad_Object[] {
   const elements: RDF.Quad_Object[] = [];
 
   while (!rdf.nil.equals(head)) {
@@ -91,7 +96,7 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
       .map(argument => evaluate(store, argument, memory).value)
       .join(" ");
 
-    console.log(s);
+    printOnConsole(s);
 
     return N3.DataFactory.literal(s);
   } else if (pls.affect.equals(elements[0])) {
@@ -112,7 +117,7 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
   }
 }
 
-function readInstructions(dataset: RDF.DatasetCore, instructions: RDF.Quad_Subject) {
+function executeInstructions(dataset: RDF.DatasetCore, instructions: RDF.Quad_Subject) {
   let memory: Memory = {};
 
   for (const instruction of unlist(dataset, instructions)) {
@@ -120,22 +125,25 @@ function readInstructions(dataset: RDF.DatasetCore, instructions: RDF.Quad_Subje
   }
 }
 
-function readGraph(store: RDF.DatasetCore) {
-  const mainFunctionQuads = store.match(null, rdf.type, pls.main_function, $dg);
-  if (mainFunctionQuads.size !== 1) {
-    throw Error("No unique main function found");
-  }
+export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Subject) {
+  const mainInstructions = followThrough(dataset, funcName, pls.do);
 
-  const mainInstructions = followThrough(
-    store, getQuad(mainFunctionQuads).subject, pls.instructions
-  );
   if (mainInstructions === null) {
     throw Error("No unique instructions found");
   } else if (mainInstructions.termType === 'Literal') {
     throw Error("Instructions should be an rdf list");
   }
 
-  readInstructions(store, mainInstructions);
+  return executeInstructions(dataset, mainInstructions);
+}
+
+export function executeRDFPLS(store: RDF.DatasetCore) {
+  const mainFunctionQuads = store.match(null, rdf.type, pls.main_function, $dg);
+  if (mainFunctionQuads.size !== 1) {
+    throw Error("No unique main function found");
+  }
+
+  return executeFunction(store, getQuad(mainFunctionQuads).subject);
 }
 
 function main() {
@@ -143,7 +151,9 @@ function main() {
 
   const graph = new N3.Store();
   graph.addQuads(readFile(filename));
-  readGraph(graph);
+  executeRDFPLS(graph);
 }
 
-main();
+if (require.main === module) {
+  main();
+}

@@ -1,0 +1,35 @@
+@prefix : <http://example.org/> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+#### Hello world test
+:hello_world
+  rdf:type pls:function ;
+  # Code
+  pls:do (
+    ( pls:print "Hello world" )
+  ) ;
+  # Expected output
+  pls:print ( "Hello world" ) .
+
+
+#### Basic maths test
+:deuxPlusTrois
+  rdf:type pls:function ;
+  # Code
+  pls:do (
+    ( pls:affect _:two 2 )
+    ( pls:affect _:three ( pls:plus 4 -1 ) )
+    ( pls:print _:two )
+    ( pls:print _:three )
+    ( pls:affect _:five ( pls:plus _:two _:three ) )
+    ( pls:print _:five )
+    ( pls:print ( pls:plus 20 _:two ) )
+  ) ;
+  # Expected output
+  pls:check_the_output (
+    "2"
+    "3"
+    "5"
+    "22"
+  ) .

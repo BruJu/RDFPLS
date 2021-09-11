@@ -3,7 +3,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 :main rdf:type pls:main_function ;
-    pls:instructions (
-        ( pls:print "Hello world" )
-        ( pls:print "Currently only print is supported" )
-    ) .
+  pls:instructions (
+    ( pls:print "Hello world" )
+    ( pls:print "And another print!" )
+  ) .

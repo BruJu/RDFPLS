@@ -1,8 +1,40 @@
 {
   "dependencies": {
-    "@graphy/content.ttl.read": "^4.3.3",
-    "@graphy/core.data.factory": "^4.3.3",
     "@rdfjs/namespace": "^1.1.0",
-    "n3": "^1.8.0"
-  }
+    "@rdfjs/types": "^1.0.1",
+    "n3": "^1.8.0",
+    "prec": "^0.0.1",
+    "rdf-string": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/n3": "^1.10.3",
+    "@types/rdfjs__namespace": "^1.1.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "name": "rdfpls",
+  "description": "Resource Description Framework Programming Language S (the S stands for whatever\r you like. I like to think it means Stupid because it is a bad idea) is a\r joke programming language using RDF.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BruJu/RDFPLS.git"
+  },
+  "keywords": [
+    "rdf",
+    "programming-language"
+  ],
+  "author": "Julian Bruyat <julian@bruy.at>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BruJu/RDFPLS/issues"
+  },
+  "homepage": "https://github.com/BruJu/RDFPLS#readme"
 }

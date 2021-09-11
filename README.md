@@ -8,7 +8,7 @@ joke programming language using RDF.
 
 - Clone the repository (eh)
 - `npm install`
-- `node rdfplsinterpreter.js examples\helloworld.ttl`
+- `npx ts-node index.ts examples\helloworld.ttl`
 
 ```
 Hello world
@@ -20,13 +20,7 @@ Currently only print is supported
 
 ### Mathematics and variables!
 
-- `node rdfplsinterpreter.js examples\maths.ttl`
-- It crashes because N3's parser doesn't allow literals in subject position :(
-    - See the message `    at N3Parser._readSubject (B:\RDFPLS\node_modules\n3\lib\N3Parser.js:253:40)`
-    - Remove that line
-    - Yes, RDFPLS also promotes the worst programming practices.
-- Retype the command line
-- It works !
+- `npx ts-node index.ts examples\maths.ttl`
 
 Currently supported operators are pls:plus, minus, times, divide, power and pickTheCutest (on xsd:integer).
 
@@ -40,3 +34,60 @@ are cuter than biggers!
 - Loops (and at this point, RDFPLS will be turing complete!)
 - Functions
 - Javascript functions in graphs to code primitive functions!
+
+
+## How to write a program in RDF PLS
+
+~~PLS don't and use another programming language~~
+
+You need to have a main function with the list of instructions
+
+```turtle
+<whatever you want> rdf:type pls:main_function ;
+  pls:instructions ( the list of expression ) .
+```
+
+An expression is either a literal or a function call.
+
+A function call is a list (at this point, this language should have been called RDF list) with as the first element the identifier of the function and the others are the arguments.
+
+Examples:
+
+- Example 1
+
+*RDFPLS*
+```
+[] rdf:type pls:main_function ;
+  pls:instructions ( ( pls:print "hello world" ) )
+```
+
+*JavaScript*
+```js
+console.log("hello world")
+```
+
+- Example 2
+```
+[] rdf:type pls:main_function ;
+  pls:instructions (
+    ( pls:affect _:x 500 )
+    ( pls:affect _:y ( pls:plus _:x 55 ) )
+    ( pls:print _:y )
+  )
+```
+
+*C++* (This README is not even consistent?)
+```
+int main() {
+    const x = 500;
+    const y = x + 55;
+    std::cout << y << '\n';
+    return 0;
+}
+```
+
+
+## License
+
+You probably shouldn't consider using any code from this project, but if you
+like to live very dangerously, this project is under the [MIT License](LICENSE).

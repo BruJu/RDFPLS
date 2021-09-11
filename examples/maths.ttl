@@ -3,7 +3,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 :main rdf:type pls:main_function ;
-  pls:instructions (
+  pls:do (
     ( pls:print ( pls:plus 3 2 ) )
     ( pls:print 77 )
     ( pls:affect _:x ( pls:plus 80 8 ) )

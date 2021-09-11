@@ -1,0 +1,35 @@
+@prefix : <rdfpls://> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+:is_pair rdf:type pls:function ;
+  pls:receive ( _:number ) ;
+  pls:do (
+    ( pls:if
+      ( pls:lessThan _:number 0 )
+      ( ( pls:answer "negative" ) )
+      ( 
+        (
+          pls:if
+          ( pls:greaterThan _:number 0 )
+          ( ( pls:answer "positive" ) )
+        )
+      )
+    )
+    ( pls:answer "zero" )
+  ) .
+
+:test_branch
+  rdf:type pls:function ;
+  # Code
+  pls:do (
+    ( pls:print ( :is_pair 5 ) )
+    ( pls:print ( :is_pair 0 ) )
+    ( pls:print ( :is_pair -4 ) )
+  ) ;
+  # Expected output
+  pls:check_the_output (
+    "positive"
+    "zero"
+    "negative"
+  ) .

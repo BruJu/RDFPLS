@@ -20,7 +20,7 @@ And another print!
 - Variables
 - Basic operators (+, -, *, /, power and "pick the cutest")
 - Functions
-
+- Branchs
 
 ### Mathematics and variables!
 
@@ -34,7 +34,6 @@ are cuter than biggers!
 
 ## TODO
 
-- Branchs
 - Loops (and at this point, RDFPLS will be turing complete!)
 - Javascript functions in graphs to code primitive functions!
 

@@ -1,8 +1,8 @@
 # RDFPLS
 
-Resource Description Framework Programming Language S (the S stands for whatever
-you like. I like to think it means Stupid because it is a bad idea) is a
-joke programming language using RDF.
+**R**esource **D**escription **F**ramework **P**rogramming **L**anguage **S**
+(the S stands for whatever you like. I like to think it means Stupid because it
+is a bad idea) is a joke programming language using RDF.
 
 ## Getting started
 
@@ -12,10 +12,14 @@ joke programming language using RDF.
 
 ```
 Hello world
-Currently only print is supported
+And another print!
 ```
 
 ## Features
+
+- Variables
+- Basic operators (+, -, *, /, power and "pick the cutest")
+- Functions
 
 
 ### Mathematics and variables!
@@ -32,19 +36,18 @@ are cuter than biggers!
 
 - Branchs
 - Loops (and at this point, RDFPLS will be turing complete!)
-- Functions
 - Javascript functions in graphs to code primitive functions!
 
 
 ## How to write a program in RDF PLS
 
-~~PLS don't and use another programming language~~
+~~PLS don't and use a real programming language~~
 
 You need to have a main function with the list of instructions
 
 ```turtle
 <whatever you want> rdf:type pls:main_function ;
-  pls:instructions ( the list of expression ) .
+  pls:do ( the list of expression ) .
 ```
 
 An expression is either a literal or a function call.
@@ -58,7 +61,7 @@ Examples:
 *RDFPLS*
 ```
 [] rdf:type pls:main_function ;
-  pls:instructions ( ( pls:print "hello world" ) )
+  pls:do ( ( pls:print "hello world" ) )
 ```
 
 *JavaScript*
@@ -76,7 +79,7 @@ console.log("hello world")
   )
 ```
 
-*C++* (This README is not even consistent?)
+*C++* (This README is not even consistent)
 ```
 int main() {
     const x = 500;
@@ -85,6 +88,8 @@ int main() {
     return 0;
 }
 ```
+
+- Check out the [test folder](test/programs) for some examples!
 
 
 ## License

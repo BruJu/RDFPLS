@@ -36,6 +36,7 @@ export function unlist(dataset: RDF.DatasetCore, head: RDF.Quad_Subject): RDF.Qu
   while (!rdf.nil.equals(head)) {
     elements.push(followThrough(dataset, head, rdf.first)!);
     head = followThrough(dataset, head, rdf.rest)! as RDF.Quad_Subject;
+    if (head === null) throw Error("Invalid list");
   }
 
   return elements;
@@ -83,27 +84,32 @@ function evaluate(store: RDF.DatasetCore, node: RDF.Term, memory: Memory) {
   }
 
   // Not a literal = it's a function call, and functions calls are lists
-  return readInstruction(store, node, memory);
+  return readInstruction(store, node, memory).value;
 }
 
-function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memory: Memory): RDF.Literal {
+function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memory: Memory)
+: { value: RDF.Literal, type: 'normal' | 'return' } {
   const elements = unlist(store, triple);
 
   const functionName = elements[0];
 
-  if (pls.print.equals(elements[0])) {
+  if (pls.print.equals(functionName) || pls.trueprint.equals(functionName)) {
     const s = elements.slice(1)
       .map(argument => evaluate(store, argument, memory).value)
       .join(" ");
 
-    printOnConsole(s);
+    if (pls.print.equals(functionName)) {
+      printOnConsole(s);
+    } else {
+      console.log(s);
+    }
 
-    return N3.DataFactory.literal(s);
+    return { value: N3.DataFactory.literal(s), type: 'normal' };
   } else if (pls.affect.equals(elements[0])) {
     const destination = rdfString.termToString(elements[1]);
     const expression = evaluate(store, elements[2], memory);
     memory[destination] = expression;
-    return expression;
+    return { value: expression, type: 'normal' };
   } else if (pls.plus.equals(functionName)
     || pls.minus.equals(functionName)
     || pls.times.equals(functionName)
@@ -111,21 +117,38 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
     || pls.power.equals(functionName)
     || pls.pickTheCutest.equals(functionName)) {
     const args = elements.slice(1, 3).map(lit => parseInt(evaluate(store, lit, memory).value));
-    return N3.DataFactory.literal(binaryOperators[functionName.value](args[0], args[1]));
+    return {
+      value: N3.DataFactory.literal(binaryOperators[functionName.value](args[0], args[1])),
+      type: 'normal'
+    };
+  } else if (pls.answer.equals(functionName) || (pls.return.equals(functionName) && Math.random() > 0.5)) {
+    return { value: evaluate(store, elements[1], memory), type: 'return' };
+  } else if (pls.return.equals(functionName)) {
+    // This behaviour ensures that noone uses RDFPLS in a serious project
+    throw Error("You wrote somewhere pls:return but you probably meant pls:answer");
   } else {
-    throw Error("Unknown function: " + elements[0].value);
+    const candidates = store.match(functionName, rdf.type, pls.function, $dg);
+    if (candidates.size === 0) {
+      throw Error("Unknown function: " + elements[0].value);  
+    }
+
+    const argList = elements.slice(1).map(object => evaluate(store, object, memory));
+    return { value: executeFunction(store, functionName as RDF.Quad_Subject, argList), type: 'normal' };
   }
 }
 
-function executeInstructions(dataset: RDF.DatasetCore, instructions: RDF.Quad_Subject) {
-  let memory: Memory = {};
-
+function executeInstructions(dataset: RDF.DatasetCore, instructions: RDF.Quad_Subject, memory: Memory) {
   for (const instruction of unlist(dataset, instructions)) {
-    readInstruction(dataset, instruction as RDF.Quad_Subject, memory);
+    const value = readInstruction(dataset, instruction as RDF.Quad_Subject, memory);
+    if (value.type === 'return') {
+      return value.value;
+    }
   }
+
+  return N3.DataFactory.literal("No value");
 }
 
-export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Subject) {
+export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Subject, funcArgs: RDF.Literal[] = []) {
   const mainInstructions = followThrough(dataset, funcName, pls.do);
 
   if (mainInstructions === null) {
@@ -134,7 +157,18 @@ export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Sub
     throw Error("Instructions should be an rdf list");
   }
 
-  return executeInstructions(dataset, mainInstructions);
+  let memory: Memory = {};
+
+  const receiveObject = followThrough(dataset, funcName, pls.receive);
+  if (receiveObject !== null) {
+    for (const possibleArgument of unlist(dataset, receiveObject as RDF.Quad_Subject)) {
+      const variableName = rdfString.termToString(possibleArgument);
+      const value = funcArgs.length !== 0 ? funcArgs.splice(0, 1)[0] : N3.DataFactory.literal(0);
+      memory[variableName] = value;
+    }
+  }
+
+  return executeInstructions(dataset, mainInstructions, memory);
 }
 
 export function executeRDFPLS(store: RDF.DatasetCore) {

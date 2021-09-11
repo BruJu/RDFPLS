@@ -1,0 +1,25 @@
+@prefix : <pls://test/> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/TR/rdf-schema#> .
+
+:square
+  rdf:type pls:function ;
+  rdfs:label "Square function"@en ;
+  rdfs:comment "Compute the squared value of the given value" ;
+  pls:receive ( _:value ) ;
+  pls:do (
+    ( pls:answer ( pls:times _:value _:value ) )
+  ) .
+
+:five rdf:type pls:function ; pls:do (
+  ( pls:answer 5 )
+) .
+
+:main
+  rdf:type pls:function ;
+  pls:do (
+    ( pls:print ( :five ) )
+    ( pls:print ( :square 2 ) )
+  ) ;
+  pls:check_the_output ( "5" "4" ).

@@ -33,3 +33,32 @@
     "zero"
     "negative"
   ) .
+
+
+:looping
+  rdf:type pls:function ;
+  pls:do (
+    ( pls:affect _:i 10 )
+    (
+      pls:while
+      ( pls:beDifferent _:i 0 )
+      (
+        ( pls:print _:i )
+        ( pls:affect _:i ( pls:minus _:i 1 ) )
+      )
+    )
+    ( pls:print "Boom!" )
+  ) ;
+  pls:check_the_output (
+    "10"
+    "9"
+    "8"
+    "7"
+    "6"
+    "5"
+    "4"
+    "3"
+    "2"
+    "1"
+    "Boom!"
+  ) .

@@ -1,0 +1,23 @@
+@prefix : <exclamation://mark/> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+:factorial a pls:function ;
+  pls:receive ( _:value ) ;
+  pls:do (
+    (
+      pls:if
+      ( pls:lessThan _:value 2 )
+      ( ( pls:answer 1 ) )
+      ( ( pls:answer ( pls:times _:value ( :factorial ( pls:minus _:value 1 ) ) ) ) )
+    )
+  ) .
+
+:factorial_test a pls:function ;
+  pls:do (
+    ( pls:print ( :factorial 4  ) )
+    ( pls:print ( :factorial 5  ) )
+    ( pls:print ( :factorial 10 ) )
+  ) ;
+  pls:check_the_output ( "24" "120" "3628800" ) .

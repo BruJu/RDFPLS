@@ -21,5 +21,6 @@
   pls:do (
     ( pls:print ( :five ) )
     ( pls:print ( :square 2 ) )
+    ( pls:print ( :square ) ) # default parameter = 0
   ) ;
-  pls:check_the_output ( "5" "4" ).
+  pls:check_the_output ( "5" "4" "0" ).

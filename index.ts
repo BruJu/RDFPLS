@@ -126,6 +126,7 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
   } else if (functionName.equals(pls.lessThan)
     || functionName.equals(pls.greaterThan)
     || functionName.equals(pls.equals)
+    || functionName.equals(pls.beDifferent)
   ) {
     const args = elements.slice(1, 3).map(lit => parseInt(evaluate(store, lit, memory).value));
 
@@ -133,6 +134,7 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
     if (functionName.equals(pls.lessThan)) val = args[0] < args[1];
     else if (functionName.equals(pls.greaterThan)) val = args[0] > args[1];
     else if (functionName.equals(pls.equals)) val = args[0] == args[1];
+    else if (functionName.equals(pls.beDifferent)) val = args[0] != args[1];
     else throw Error("Unknown comp function");
 
     return {
@@ -159,6 +161,22 @@ function readInstruction(store: RDF.DatasetCore, triple: RDF.Quad_Subject, memor
       }
     } else {
       throw Error("Condition is not evaluated to true or false");
+    }
+  } else if (pls.while.equals(functionName)) {
+    while (true) {
+      const conditionEval = evaluate(store, elements[1], memory);
+      const conditionEvalBool = precRDFUtil.xsdBoolToBool(conditionEval);
+      
+      if (conditionEvalBool === true) {
+        const x = executeInstructions(store, elements[2] as RDF.Quad_Subject, memory);
+        if (x.value !== 'No value') {
+          return { value: x, type: 'return' };
+        }
+      } else if (conditionEvalBool === false) {
+        return { value: N3.DataFactory.literal('No value'), type: 'normal' }; 
+      } else {
+        throw Error("Condition is not evaluated to true or false");
+      }
     }
   } else {
     const candidates = store.match(functionName, rdf.type, pls.function, $dg);
@@ -187,11 +205,10 @@ export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Sub
 
   if (mainInstructions === null) {
     throw Error("No unique instructions found");
-  } else if (mainInstructions.termType === 'Literal') {
-    throw Error("Instructions should be an rdf list");
   }
 
   let memory: Memory = {};
+  let trueArgs: RDF.Literal[] = [];
 
   const receiveObject = followThrough(dataset, funcName, pls.receive);
   if (receiveObject !== null) {
@@ -199,10 +216,21 @@ export function executeFunction(dataset: RDF.DatasetCore, funcName: RDF.Quad_Sub
       const variableName = rdfString.termToString(possibleArgument);
       const value = funcArgs.length !== 0 ? funcArgs.splice(0, 1)[0] : N3.DataFactory.literal(0);
       memory[variableName] = value;
+      trueArgs.push(value);
     }
   }
 
-  return executeInstructions(dataset, mainInstructions, memory);
+  if (mainInstructions.termType === 'Literal') {
+    if (mainInstructions.datatype.equals(pls.javascript_code)) {
+      const code = mainInstructions.value;
+      const func = new Function("return " + code.trim())();
+      return func(N3.DataFactory, ...trueArgs);
+    } else {
+      throw Error("Instructions should be an rdf list or Javascript code");
+    }
+  } else {
+    return executeInstructions(dataset, mainInstructions, memory);
+  }
 }
 
 export function executeRDFPLS(store: RDF.DatasetCore) {

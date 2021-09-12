@@ -21,6 +21,8 @@ And another print!
 - Basic operators (+, -, *, /, power and "pick the cutest")
 - Functions
 - Branchs
+- While loops
+- Call JavaScript functions to ensure maximal security issues
 
 ### Mathematics and variables!
 
@@ -30,12 +32,6 @@ Currently supported operators are pls:plus, minus, times, divide, power and pick
 
 Positive numbers are cuter than negatives. Even numbers are cuter than odd. Smaller numbers
 are cuter than biggers!
-
-
-## TODO
-
-- Loops (and at this point, RDFPLS will be turing complete!)
-- Javascript functions in graphs to code primitive functions!
 
 
 ## How to write a program in RDF PLS

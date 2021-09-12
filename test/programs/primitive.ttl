@@ -1,0 +1,23 @@
+@prefix : <rdf://stp/> .
+@prefix pls: <http://bruy.at/rdf/pls#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+:capitalize a pls:function ;
+  pls:receive ( _:param1 ) ;
+  pls:do
+    """
+      function (dataFactory, string) {
+        return dataFactory.literal(string.value.toUpperCase());
+      }
+    """^^pls:javascript_code .
+
+:main a pls:function ;
+  pls:do (
+    ( pls:print ( :capitalize "Hello world" ) )
+    ( pls:print ( :capitalize "much capitalization" ) )
+  ) ;
+  pls:check_the_output (
+    "HELLO WORLD"
+    "MUCH CAPITALIZATION"
+  ) .
